@@ -78,6 +78,14 @@ class Level {
   get description(): string {
     return this._description;
   }
+  addGroup(newGroup: Group): void {
+    this._groups.push(newGroup);
+  }
+  removeGroup(directionName: string, levelName: string): void {
+    this._groups = this._groups.filter(
+      (group: Group) => group.directionName !== directionName && group.levelName !== levelName
+    );
+  }
 
   constructor(name: string, description: string) {
     this._name = name;
