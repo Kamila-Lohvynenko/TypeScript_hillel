@@ -18,9 +18,14 @@
 // Вам необхідно подумати про поділ вашого коду на різні сутності, інтерфеси і
 // типи, щоб зробити ваше рішення типобезпечним.Реалізація всіх методів не є необхідною - це за бажанням.
 
-interface ICategoriesList {
-  [key: string]: Movie[];
+interface IMovieCategory {
+  name: string;
+  movies: Movie[];
 }
+
+// interface ICategoriesList {
+//   [key: string]: Movie[];
+// }
 interface IFiltersState {
   matchFilter: {
     filter: string | number;
@@ -34,7 +39,24 @@ interface IFiltersState {
   };
 }
 
-class MovieList {
+interface IMovie {
+  name: string;
+  year: number;
+  rating: number;
+  awards: string[];
+  addAward(award: string): void;
+}
+interface ISearchByName {
+  searchMovieByName(): Movie[] | undefined;
+}
+interface IAdvanceFilters {
+  searchMovieByName(): Movie[];
+  searchMovieByYear(): Movie[];
+  searchMovieByRating(): Movie[];
+  searchMovieByAward(): Movie[] | undefined;
+  searchMoviesByRatingDiapason(): Movie[];
+}
+class MovieList implements ISearchByName, IAdvanceFilters {
   list: Movie[] = [];
   filtersState: IFiltersState = {
     matchFilter: {
@@ -86,8 +108,8 @@ class MovieList {
     return this.list.filter(movie => movie.rating >= filter && movie.rating <= filterTo);
   }
 }
-class CategoriesList {
-  list: ICategoriesList = {};
+class CategoriesList implements ISearchByName {
+  list: IMovieCategory[] = [];
   filtersState: IFiltersState = {
     matchFilter: {
       filter: '',
@@ -96,12 +118,17 @@ class CategoriesList {
   applyFilterValue(categoryName: string): void {
     this.filtersState.matchFilter.filter = categoryName;
   }
-  findMovies(): Movie[] | undefined {
+  searchMovieByName(): Movie[] | undefined {
     const filter = this.filtersState.matchFilter.filter;
-    return this.list[filter];
+    const category: IMovieCategory[] = this.list.filter(category => category.name === filter);
+    if (category.length > 0) {
+      const chosenCategory: Movie[] = category.map(category => category.movies).flat();
+      return chosenCategory;
+    }
   }
 }
-class Movie {
+
+class Movie implements IMovie {
   name: string;
   #year: number = 0;
   #rating: number = 0;
