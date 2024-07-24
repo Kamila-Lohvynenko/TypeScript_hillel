@@ -69,7 +69,7 @@ class ToDoList {
       note.isCompleted = true;
     }
   }
-  public getListStatistic() {
+  public getListStatistic(): string {
     const completedNotes: Note[] = this._list.filter(note => !note.isCompleted);
     return `You have ${this._list.length} tasks, ${completedNotes.length} of them have not been completed yet`;
   }
@@ -81,11 +81,15 @@ class ToDoList {
   public findByText(text: string): Note[] {
     return this._list.filter(note => note.text.toLowerCase().includes(text.toLowerCase()));
   }
+}
 
-  public sortByStatus(status: boolean) {
+class SortableByStatusList extends ToDoList {
+  public sortByStatus(status: boolean): Note[] {
     return this._list.filter(note => note.isCompleted === status);
   }
-  public sortByDate() {
+}
+class SortableByDateList extends ToDoList {
+  public sortByDate(): Note[] {
     return this._list.sort((a, b) => a.createDate.getTime() - b.createDate.getTime());
   }
 }
